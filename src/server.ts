@@ -3,6 +3,7 @@ import config from "./config";
 import initDB from "./config/db";
 import { authRouter } from "./modules/auth/auth.routes";
 import cors from "cors"
+import { useRoutes } from "./modules/users/users.routes";
 
 const app = express();
 // const port = Number(process.env.PORT);
@@ -22,6 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 // Auth Routes
 
 app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/users", useRoutes)
 
 app.listen(port, () => {
   console.log(`DriveHub app listening on port ${port}`);
