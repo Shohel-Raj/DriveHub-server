@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { userController } from "./users.controller";
+import { verifyToken } from "../../middleware/auth";
+import { AdminRoutes } from "../../middleware/role";
 
 
 
@@ -7,12 +9,12 @@ import { userController } from "./users.controller";
 const router = Router();
 
 // GET all users (Admin only)
-router.get("/", userController.getAllUsersController);
+router.get("/",verifyToken, AdminRoutes(), userController.getAllUsersController);
 
 // UPDATE user (Admin or the same user)
-router.put("/:userId", userController.updateUserController);
+router.put("/:userId",verifyToken, userController.updateUserController);
 
 // DELETE user (Admin only AND only if no active bookings)
-router.delete("/:userId",  userController.deleteUserController);
+router.delete("/:userId",verifyToken, AdminRoutes(),  userController.deleteUserController);
 
 export const useRoutes = router;

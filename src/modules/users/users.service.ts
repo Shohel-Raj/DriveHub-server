@@ -51,9 +51,23 @@ const deleteUser = async (userId: string) => {
   // Safe to delete
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
 };
+const isOwner = async (loggedInUserId: string, requestedUserId: string) => {
+  const result = await pool.query(
+    "SELECT id FROM users WHERE id = $1",
+    [requestedUserId]
+  );
+
+  if (result.rowCount === 0) {
+    return false;
+  }
+
+  return loggedInUserId === requestedUserId;
+};
+
 
 export const userService = {
   getAllUsers,
   updateUser,
   deleteUser,
+  isOwner
 };

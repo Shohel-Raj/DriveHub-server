@@ -4,6 +4,7 @@ import { vehiclesServices } from "./vehicles.service";
 const createVehicle = async (req: Request, res: Response) => {
   try {
     const body = req.body;
+    
     // validate required fields
     const required = [
       "vehicle_name",

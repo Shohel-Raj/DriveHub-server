@@ -1,45 +1,73 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { userService } from "./users.service";
 
 const getAllUsersController = async (req: Request, res: Response) => {
   try {
     const data = await userService.getAllUsers();
-    res.status(200).json({ success: true, data });
-  } catch (error) {
-    res.status(404).json({ success: false, massage: error.massage });
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      data,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch users",
+      errors: error.message,
+    });
   }
 };
 
-const updateUserController = async (
-  req: Request,
-  res: Response,
-
-) => {
+const updateUserController = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.params;          // requested user ID
+    const loggedInUserId = req.user.userId; // from JWT
+    const role = req.user.role;             // from JWT
+
+    // Check ownership
+    const isOwner = await userService.isOwner(loggedInUserId, userId as string);
+
+    if (!isOwner && role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: You are not allowed to update this user",
+        errors: "not-owner",
+      });
+    }
+
     const updated = await userService.updateUser(userId as string, req.body);
 
-    res.status(200).json({ success: true, data: updated });
-  } catch (error) {
-    res.status(401).json({ success: false, massage: error.massage });
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: updated,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update user",
+      errors: error.message,
+    });
   }
 };
 
-const deleteUserController = async (
-  req: Request,
-  res: Response,
-
-) => {
+const deleteUserController = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    // const id=Number(userId)
-    await userService.deleteUser(userId);
 
-    res
-      .status(200)
-      .json({ success: true, message: "User deleted successfully" });
-  } catch (error) {
-    res.status(401).json({ success: false, massage: error.massage });
+    await userService.deleteUser(userId as string);
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to delete user",
+      errors: error.message,
+    });
   }
 };
 
