@@ -4,8 +4,8 @@ import { vehiclesServices } from "./vehicles.service";
 const createVehicle = async (req: Request, res: Response) => {
   try {
     const body = req.body;
-    
-    // validate required fields
+
+    // Validate required fields
     const required = [
       "vehicle_name",
       "type",
@@ -13,53 +13,124 @@ const createVehicle = async (req: Request, res: Response) => {
       "daily_rent_price",
       "availability_status",
     ];
-    for (const f of required)
-      if (body[f] === undefined)
-        return res.status(400).json({ error: `${f} is required` });
+
+    for (const f of required) {
+      if (body[f] === undefined) {
+        return res.status(400).json({
+          success: false,
+          message: `${f} is required`,
+          errors: `${f} is required`,
+        });
+      }
+    }
+
     const vehicle = await vehiclesServices.createVehicle(body);
-    return res.status(201).json({ data: vehicle });
+
+    return res.status(201).json({
+      success: true,
+      message: "Vehicle created successfully",
+      data: vehicle,
+    });
   } catch (err: any) {
-    return res
-      .status(err.status || 500)
-      .json({ error: err.message || "Server error" });
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || "Server error",
+      errors: err.message,
+    });
   }
 };
 
 const listVehicles = async (_req: Request, res: Response) => {
-  const vehicles = await vehiclesServices.getAllVehicles();
-  return res.json({ data: vehicles });
+  try {
+    const vehicles = await vehiclesServices.getAllVehicles();
+
+    return res.json({
+      success: true,
+      message: "Vehicles fetched successfully",
+      data: vehicles,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Server error",
+      errors: err.message,
+    });
+  }
 };
 
 const getVehicle = async (req: Request, res: Response) => {
-  const id = Number(req.params.vehicleId);
-  const v = await vehiclesServices.getVehicleById(id);
-  if (!v) return res.status(404).json({ error: "Vehicle not found" });
-  return res.json({ data: v });
+  try {
+    const id = Number(req.params.vehicleId);
+    const v = await vehiclesServices.getVehicleById(id);
+
+    if (!v) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found",
+        errors: "Vehicle not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Vehicle fetched successfully",
+      data: v,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Server error",
+      errors: err.message,
+    });
+  }
 };
 
 const updateVehicle = async (req: Request, res: Response) => {
-  const id = Number(req.params.vehicleId);
-  const updates = req.body;
   try {
+    const id = Number(req.params.vehicleId);
+    const updates = req.body;
+
     const updated = await vehiclesServices.updateVehicle(id, updates);
-    return res.json({ data: updated });
+
+    return res.json({
+      success: true,
+      message: "Vehicle updated successfully",
+      data: updated,
+    });
   } catch (err: any) {
-    return res
-      .status(err.status || 500)
-      .json({ error: err.message || "Server error" });
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || "Server error",
+      errors: err.message,
+    });
   }
 };
 
 const deleteVehicle = async (req: Request, res: Response) => {
-  const id = Number(req.params.vehicleId);
   try {
+    const id = Number(req.params.vehicleId);
+
     const deleted = await vehiclesServices.deleteVehicleIfNoActiveBookings(id);
-    if (!deleted) return res.status(404).json({ error: "Vehicle not found" });
-    return res.json({ data: deleted });
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found",
+        errors: "Vehicle not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Vehicle deleted successfully",
+      data: deleted,
+    });
   } catch (err: any) {
-    return res
-      .status(err.status || 500)
-      .json({ error: err.message || "Server error" });
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || "Server error",
+      errors: err.message,
+    });
   }
 };
 
