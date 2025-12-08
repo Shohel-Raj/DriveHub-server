@@ -44,7 +44,7 @@ const deleteUser = async (userId: string) => {
     [userId]
   );
 
-  if (bookings.rowCount > 0) {
+  if (bookings.rowCount! > 0) {
     throw new Error("User cannot be deleted because they have bookings");
   }
 

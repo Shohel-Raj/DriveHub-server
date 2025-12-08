@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { pool } from "../../config/db";
 dotenv.config();
@@ -46,7 +46,7 @@ const signinUser = async (email: string, password: string) => {
   if (!match) throw { status: 400, message: "Invalid credentials" };
 
   // JWT token
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  const token = jwt.sign(payload as JwtPayload, JWT_SECRET);
 
   return {
     token,

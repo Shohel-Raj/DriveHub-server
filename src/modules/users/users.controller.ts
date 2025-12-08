@@ -22,8 +22,8 @@ const getAllUsersController = async (req: Request, res: Response) => {
 const updateUserController = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;          // requested user ID
-    const loggedInUserId = req.user.userId; // from JWT
-    const role = req.user.role;             // from JWT
+    const loggedInUserId = req.user!.userId; // from JWT
+    const role = req.user!.role;             // from JWT
 
     // Check ownership
     const isOwner = await userService.isOwner(loggedInUserId, userId as string);

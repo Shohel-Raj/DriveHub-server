@@ -55,7 +55,7 @@ const deleteVehicleIfNoActiveBookings = async (id: number) => {
     `SELECT 1 FROM bookings WHERE vehicle_id = $1 AND status = 'active' LIMIT 1`,
     [id]
   );
-  if (activeBookings.rowCount > 0)
+  if (activeBookings.rowCount! > 0)
     throw { status: 400, message: "Vehicle has active bookings" };
   const res = await pool.query(
     `DELETE FROM vehicles WHERE id = $1 RETURNING *`,
